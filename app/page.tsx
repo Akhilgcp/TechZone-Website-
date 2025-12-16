@@ -17,19 +17,21 @@ export default function Home() {
             </div>
 
             {/* About Section with Dotted Surface */}
-            <AboutSection />
+            <div className="max-w-7xl mx-auto">
+                <AboutSection />
 
-            {/* Courses Section - Grid Feature Cards */}
-            <CoursesSection />
+                {/* Courses Section - Grid Feature Cards */}
+                <CoursesSection />
 
-            {/* Features & Benefits Section - 2x2 Grid */}
-            <Features2x2Demo />
+                {/* Features & Benefits Section - 2x2 Grid */}
+                <Features2x2Demo />
 
-            {/* TechZone Gallery - Interactive Cursor Trail */}
-            <TechZoneGallery />
+                {/* TechZone Gallery - Interactive Cursor Trail */}
+                <TechZoneGallery />
 
-            {/* Branches Section - Interactive Maps */}
-            <BranchesMapsDemo />
+                {/* Branches Section - Interactive Maps */}
+                <BranchesMapsDemo />
+            </div>
 
             {/* Footer */}
             <TechZoneFooter />
