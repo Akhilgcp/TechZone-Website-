@@ -5,8 +5,6 @@ import {
     Phone,
     MapPin,
 } from "lucide-react";
-import { FooterBackgroundGradient } from "@/components/ui/hover-footer";
-import { TextHoverEffect } from "@/components/ui/hover-footer";
 import { TextDisperse } from "@/components/ui/text-disperse";
 import OrbitingSocialIcons from "@/components/ui/orbiting-social-icons";
 
@@ -53,8 +51,8 @@ function TechZoneFooter() {
     ];
 
     return (
-        <footer className="bg-[#0F0F11]/10 relative h-fit rounded-3xl overflow-hidden m-8">
-            <div className="max-w-7xl mx-auto p-14 z-40 relative">
+        <footer className="bg-gradient-to-b from-neutral-900 to-neutral-950 relative h-fit rounded-3xl overflow-hidden m-8">
+            <div className="max-w-7xl mx-auto p-14 relative">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-12">
                     {/* Left side - Orbiting Social Icons */}
                     <div className="flex items-center justify-center lg:justify-start">
@@ -123,8 +121,6 @@ function TechZoneFooter() {
                     </p>
                 </div>
             </div>
-
-            <FooterBackgroundGradient />
         </footer>
     );
 }
