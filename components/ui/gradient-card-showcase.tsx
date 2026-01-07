@@ -4,6 +4,15 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { BookOpen, Database, Cpu, Zap, Sparkles, Settings2, Globe, Fingerprint, X, Clock, BarChart, Users, CheckCircle2, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EvervaultCard, Icon as EvervaultIcon } from '@/components/ui/evervault-card';
+import { PixelCanvas } from '@/components/ui/pixel-canvas';
+import { CardSpotlight } from '@/components/ui/card-spotlight';
+import { GlowingStarsBackgroundCard, GlowingStarsDescription, GlowingStarsTitle } from '@/components/ui/glowing-stars';
+import { Tilt } from '@/components/ui/tilt';
+import { Spotlight } from '@/components/ui/spotlight';
+import { Meteors } from '@/components/ui/meteors';
+import CardFlip from '@/components/ui/flip-card';
+import { FlippingCard } from '@/components/ui/flipping-card';
 
 type CourseDetail = {
     title: string;
@@ -233,6 +242,7 @@ function CourseModal({ course, onClose }: { course: CourseDetail; onClose: () =>
                     <img
                         src={course.courseImage}
                         alt={course.title}
+                        loading="lazy"
                         className="w-full h-full object-contain"
                     />
                 </div>
@@ -342,83 +352,114 @@ function CourseModal({ course, onClose }: { course: CourseDetail; onClose: () =>
     );
 }
 
-export default function GradientCardShowcase() {
+export default function GradientCardShowcase({ onBack }: { onBack?: () => void }) {
     const shouldReduceMotion = useReducedMotion();
     const [selectedCourse, setSelectedCourse] = useState<CourseDetail | null>(null);
 
     return (
         <>
-            <div className="flex justify-center items-center flex-wrap py-10 bg-neutral-950 min-h-screen">
-                {COURSES.map((course, idx) => {
-                    const Icon = course.icon;
-
-                    return (
-                        <div
-                            key={idx}
-                            className="group relative w-[320px] h-[400px] m-[40px_30px] transition-all duration-500"
+            <div className="bg-neutral-950 min-h-screen pt-24 pb-10 relative">
+                {/* Back Button for SPA Mode */}
+                {onBack && (
+                    <div className="container mx-auto px-4 mb-8">
+                        <button
+                            onClick={onBack}
+                            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10"
                         >
-                            {/* Skewed gradient panels */}
-                            <span
-                                className="absolute top-0 left-[50px] w-1/2 h-full rounded-lg transform skew-x-[15deg] transition-all duration-500 group-hover:skew-x-0 group-hover:left-[20px] group-hover:w-[calc(100%-90px)]"
-                                style={{
-                                    background: `linear-gradient(315deg, ${course.gradientFrom}, ${course.gradientTo})`,
-                                }}
-                            />
-                            <span
-                                className="absolute top-0 left-[50px] w-1/2 h-full rounded-lg transform skew-x-[15deg] blur-[30px] transition-all duration-500 group-hover:skew-x-0 group-hover:left-[20px] group-hover:w-[calc(100%-90px)]"
-                                style={{
-                                    background: `linear-gradient(315deg, ${course.gradientFrom}, ${course.gradientTo})`,
-                                }}
-                            />
+                            <X size={20} />
+                            <span>Back to Home</span>
+                        </button>
+                    </div>
+                )}
 
-                            {/* Animated blurs */}
-                            <span className="pointer-events-none absolute inset-0 z-10">
-                                <span className="absolute top-0 left-0 w-0 h-0 rounded-lg opacity-0 bg-[rgba(255,255,255,0.1)] backdrop-blur-[10px] shadow-[0_5px_15px_rgba(0,0,0,0.08)] transition-all duration-100 animate-blob group-hover:top-[-50px] group-hover:left-[50px] group-hover:w-[100px] group-hover:h-[100px] group-hover:opacity-100" />
-                                <span className="absolute bottom-0 right-0 w-0 h-0 rounded-lg opacity-0 bg-[rgba(255,255,255,0.1)] backdrop-blur-[10px] shadow-[0_5px_15px_rgba(0,0,0,0.08)] transition-all duration-500 animate-blob animation-delay-1000 group-hover:bottom-[-50px] group-hover:right-[50px] group-hover:w-[100px] group-hover:h-[100px] group-hover:opacity-100" />
-                            </span>
+                <div className="flex justify-center items-center flex-wrap gap-8">
+                    {COURSES.map((course, idx) => {
+                        const Icon = course.icon;
+                        // Determine image URL
+                        const isDataScience = course.title === 'Data Science with Gen AI';
+                        // Default placeholders if course.courseImage isn't fully working, though it seems set.
+                        // Using the existing logic from the specific cards or falling back to course.courseImage
+                        const displayImage = course.courseImage || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400&h=300";
 
-                            {/* Content */}
-                            <div className="relative z-20 left-0 p-[20px_40px] bg-[rgba(255,255,255,0.05)] backdrop-blur-[10px] shadow-lg rounded-lg text-white transition-all duration-500 group-hover:left-[-25px] group-hover:p-[60px_40px] h-full flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-                                            <Icon className="h-6 w-6 text-white" strokeWidth={2} />
+                        return (
+                            <div key={idx} className="m-4">
+                                <FlippingCard
+                                    height={400}
+                                    width={320}
+                                    frontContent={
+                                        <div className="flex flex-col h-full w-full p-4 relative overflow-hidden">
+                                            {/* Image Area */}
+                                            <div className="h-48 w-full overflow-hidden rounded-lg mb-4 bg-gray-100 dark:bg-zinc-800">
+                                                <img
+                                                    src={displayImage}
+                                                    alt={course.title}
+                                                    loading="lazy"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+
+                                            {/* Content Area */}
+                                            <div className="flex flex-col flex-grow">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="p-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800">
+                                                        <Icon className="w-4 h-4 text-zinc-900 dark:text-zinc-100" />
+                                                    </div>
+                                                    <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{course.level}</span>
+                                                </div>
+
+                                                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2 leading-tight">
+                                                    {course.title}
+                                                </h3>
+                                                <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                                                    {course.desc}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <h2 className="text-2xl mb-3 font-bold">{course.title}</h2>
-                                    <p className="text-base leading-relaxed mb-4 text-white/80">{course.desc}</p>
-                                </div>
-                                <button
-                                    onClick={() => setSelectedCourse(course)}
-                                    className="inline-block text-center text-lg font-bold text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 px-4 py-2 rounded hover:bg-white/20 hover:border-white/50 hover:shadow-lg transition-all"
-                                >
-                                    Read More
-                                </button>
+                                    }
+                                    backContent={
+                                        <div className="flex flex-col h-full w-full p-6 justify-between bg-white dark:bg-zinc-900">
+                                            <div>
+                                                <h4 className="text-lg font-bold text-zinc-900 dark:text-white mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+                                                    Highlights
+                                                </h4>
+                                                <ul className="space-y-3">
+                                                    {course.modules.slice(0, 4).map((mod, i) => (
+                                                        <li key={i} className="text-sm text-zinc-600 dark:text-zinc-300 flex items-start gap-2.5">
+                                                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                                            <span className="leading-tight">{mod}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setSelectedCourse(course);
+                                                }}
+                                                className="w-full py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-black font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm mt-4"
+                                            >
+                                                View Details
+                                            </button>
+                                        </div>
+                                    }
+                                />
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Modal */}
             <AnimatePresence>
-                {selectedCourse && (
-                    <CourseModal
-                        course={selectedCourse}
-                        onClose={() => setSelectedCourse(null)}
-                    />
-                )}
+                {
+                    selectedCourse && (
+                        <CourseModal
+                            course={selectedCourse}
+                            onClose={() => setSelectedCourse(null)}
+                        />
+                    )
+                }
             </AnimatePresence>
-
-            {/* Tailwind custom utilities for animation */}
-            <style>{`
-        @keyframes blob {
-          0%, 100% { transform: translateY(10px); }
-          50% { transform: translate(-10px); }
-        }
-        .animate-blob { animation: blob 2s ease-in-out infinite; }
-        .animation-delay-1000 { animation-delay: -1s; }
-      `}</style>
         </>
     );
 }

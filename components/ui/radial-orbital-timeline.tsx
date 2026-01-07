@@ -19,14 +19,16 @@ interface TimelineItem {
 
 interface RadialOrbitalTimelineProps {
     timelineData: TimelineItem[];
+    autoRotate?: boolean; // New prop
 }
 
 export default function RadialOrbitalTimeline({
     timelineData,
+    autoRotate: initialAutoRotate = true, // Default to true
 }: RadialOrbitalTimelineProps) {
     const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
     const [rotationAngle, setRotationAngle] = useState<number>(0);
-    const [autoRotate, setAutoRotate] = useState<boolean>(true);
+    const [autoRotate, setAutoRotate] = useState<boolean>(initialAutoRotate); // Use prop for initial state
     const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
     const [centerOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
     const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
@@ -77,20 +79,33 @@ export default function RadialOrbitalTimeline({
     };
 
     useEffect(() => {
-        let rotationTimer: NodeJS.Timeout;
+        let animationFrameId: number;
+        let lastTime = performance.now();
 
-        if (autoRotate) {
-            rotationTimer = setInterval(() => {
+        const animate = (currentTime: number) => {
+            if (!autoRotate) {
+                lastTime = currentTime;
+                return;
+            }
+
+            const deltaTime = currentTime - lastTime;
+            if (deltaTime >= 16) { // Cap at ~60fps
                 setRotationAngle((prev) => {
-                    const newAngle = (prev + 0.3) % 360;
+                    const newAngle = (prev + 0.05 * (deltaTime / 16)) % 360; // Adjust speed relative to frame time
                     return Number(newAngle.toFixed(3));
                 });
-            }, 50);
+                lastTime = currentTime;
+            }
+            animationFrameId = requestAnimationFrame(animate);
+        };
+
+        if (autoRotate) {
+            animationFrameId = requestAnimationFrame(animate);
         }
 
         return () => {
-            if (rotationTimer) {
-                clearInterval(rotationTimer);
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
             }
         };
     }, [autoRotate]);
@@ -148,10 +163,17 @@ export default function RadialOrbitalTimeline({
 
     return (
         <div
-            className="w-full h-screen flex flex-col items-center justify-center bg-black overflow-hidden"
+            className="w-full h-full min-h-[500px] flex flex-col items-center justify-center bg-black overflow-hidden relative"
             ref={containerRef}
             onClick={handleContainerClick}
         >
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 text-center z-20 w-full pointer-events-none">
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
+                    Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Mission, Vision & Goal</span>
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+            </div>
+
             <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
                 <div
                     className="absolute w-full h-full flex items-center justify-center"

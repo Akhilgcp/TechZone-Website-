@@ -1,21 +1,36 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import AetherFlowHero from "@/components/ui/aether-flow-hero";
-import { SplineSceneBasic } from "@/components/ui/demo";
-import AboutSection from "@/components/ui/demo-about";
-import CoursesSection from "@/components/ui/demo-courses-with-boxes";
-import { TechZoneCoursesAccordion } from "@/components/ui/techzone-courses-accordion";
-import TechZoneOrbitalTimelineDemo from "@/components/ui/techzone-orbital-timeline-demo";
-import Features2x2Demo from "@/components/ui/features-2x2-demo";
-import TechZoneGallery from "@/components/ui/techzone-gallery";
-import BranchesMapsDemo from "@/components/ui/branches-maps-demo";
-import TechZoneFooter from "@/components/ui/techzone-footer";
-import { GlowMenuNavbar } from "@/components/ui/glow-menu-navbar";
+import dynamic from "next/dynamic";
+
+import GradientCardShowcase from "@/components/ui/gradient-card-showcase";
+
+// Dynamic imports with loading placeholders for heavy sections
+const AetherFlowHero = dynamic(() => import("@/components/ui/aether-flow-hero"), { ssr: false });
+const GlowMenuNavbar = dynamic(() => import("@/components/ui/glow-menu-navbar").then(m => m.GlowMenuNavbar), { ssr: false });
+const AboutSection = dynamic(() => import("@/components/ui/demo-about"), { ssr: false });
+const TechZoneCoursesAccordion = dynamic(() => import("@/components/ui/techzone-courses-accordion").then(m => m.TechZoneCoursesAccordion), { ssr: false });
+const TechZoneOrbitalTimelineDemo = dynamic(() => import("@/components/ui/techzone-orbital-timeline-demo").then(m => m.TechZoneOrbitalTimelineDemo), { ssr: false });
+const WhyChooseTechZone = dynamic(() => import("@/components/ui/why-choose-techzone"), { ssr: false });
+const TechZoneGallery = dynamic(() => import("@/components/ui/techzone-gallery"), { ssr: false });
+const BranchesMapsDemo = dynamic(() => import("@/components/ui/branches-maps-demo"), { ssr: false });
+const TechZoneFooter = dynamic(() => import("@/components/ui/techzone-footer"), { ssr: false });
 
 export default function Home() {
     const [showHero, setShowHero] = useState(true);
+    const [mountContent, setMountContent] = useState(false);
+    const [showAllCourses, setShowAllCourses] = useState(false);
+
+    // Only mount main content after hero has started exiting to prevent lag
+    useEffect(() => {
+        if (!showHero) {
+            const timer = setTimeout(() => {
+                setMountContent(true);
+            }, 100); // Small buffer for transition to start smoothly
+            return () => clearTimeout(timer);
+        }
+    }, [showHero]);
 
     const handleExplore = () => {
         setShowHero(false);
@@ -23,121 +38,143 @@ export default function Home() {
 
     const handleHomeClick = () => {
         setShowHero(true);
+        setMountContent(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Handle hash-based navigation (e.g., /#courses)
+    // Handle View All Courses (SPA Mode)
+    const handleViewAllCourses = () => {
+        setShowAllCourses(true);
+        window.history.pushState({ view: 'all-courses' }, '', '#all-courses');
+    };
+
+    const handleCloseAllCourses = () => {
+        setShowAllCourses(false);
+        // Remove hash without reloading if likely added by us, or just go back
+        if (window.location.hash === '#all-courses') {
+            window.history.back();
+        } else {
+            // Fallback if closed manually without hash
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+    };
+
+    // Handle Browser Back Button for Modal
     useEffect(() => {
-        const hash = window.location.hash;
-        if (hash) {
-            // Remove the # and get the section id
-            const sectionId = hash.slice(1);
-
-            // If there's a hash, hide the hero and scroll to section
-            if (sectionId) {
-                setShowHero(false);
-
-                // Wait for the page to render, then scroll
-                setTimeout(() => {
-                    const element = document.getElementById(sectionId);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }, 100);
+        const handlePopState = (event: PopStateEvent) => {
+            if (showAllCourses) {
+                setShowAllCourses(false);
             }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [showAllCourses]);
+
+    // Handle initial hash check for direct link
+    useEffect(() => {
+        if (window.location.hash === '#all-courses') {
+            setShowAllCourses(true);
+            setShowHero(false);
+            setMountContent(true);
+        } else if (window.location.hash) {
+            // Handle other hashes (e.g. #courses from back button)
+            setShowHero(false);
+            setMountContent(true);
         }
     }, []);
 
+    // Scroll to hash element when content is mounted
+    useEffect(() => {
+        if (mountContent && window.location.hash && !showAllCourses) {
+            // Immediate scroll attempt
+            const id = window.location.hash.substring(1);
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'instant' });
+                setTimeout(() => element.scrollIntoView({ behavior: 'smooth' }), 100);
+            } else {
+                setTimeout(() => {
+                    const el = document.getElementById(id);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 500);
+            }
+        }
+    }, [mountContent, showAllCourses]);
+
+
     return (
-        <>
+        <div className="bg-neutral-950 min-h-screen text-white selection:bg-blue-500/30">
+            {/* SPA Overlay for All Courses */}
+            <AnimatePresence>
+                {showAllCourses && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 z-[100] bg-neutral-950 overflow-y-auto"
+                    >
+                        {/* We pass a specific close handler that just manages UI state if triggered internally */}
+                        <GradientCardShowcase onBack={() => window.history.back()} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <AnimatePresence mode="wait">
-                {showHero ? (
+                {showHero && !showAllCourses ? (
                     <motion.div
                         key="hero"
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 1.5, ease: "easeInOut" }}
-                        className="fixed inset-0 z-50"
+                        transition={{ duration: 1.2, ease: "easeInOut" }}
+                        className="fixed inset-0 z-[60]"
                     >
                         <AetherFlowHero onExplore={handleExplore} />
                     </motion.div>
-                ) : (
+                ) : mountContent && (
                     <motion.div
                         key="main-content"
-                        initial={{ opacity: 0, scale: 1.05 }}
+                        initial={{ opacity: 0, scale: 1.02 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        // Hide main content when modal is open to prevent scroll overlap issues
+                        style={{ display: showAllCourses ? 'none' : 'block' }}
                     >
-                        {/* Navbar - Outside main container */}
+                        {/* 1. Navbar */}
                         <GlowMenuNavbar onHomeClick={handleHomeClick} />
 
-                        <main className="min-h-screen bg-neutral-950">
-                            {/* About Section - Now the Hero Section with integrated Spline */}
-                            <motion.div
-                                className="pt-16"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3, duration: 0.8 }}
-                            >
+                        <main className="pt-20">
+                            {/* 4. About Section */}
+                            <div id="about">
                                 <AboutSection />
-                            </motion.div>
+                            </div>
 
-                            {/* Radial Orbital Timeline Section - Vision, Mission, Goal */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4, duration: 0.8 }}
-                            >
-                                <TechZoneOrbitalTimelineDemo />
-                            </motion.div>
+                            {/* 5. Vision/Mission/Goal (Orbit) */}
+                            <TechZoneOrbitalTimelineDemo />
 
-                            {/* Courses Section - Interactive Accordion */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5, duration: 0.8 }}
-                            >
-                                <TechZoneCoursesAccordion />
-                            </motion.div>
+                            {/* 6. Courses Section */}
+                            <div id="courses">
+                                <TechZoneCoursesAccordion onViewAllClick={handleViewAllCourses} />
+                            </div>
 
-                            {/* Features & Benefits Section - 2x2 Grid */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.7, duration: 0.8 }}
-                            >
-                                <Features2x2Demo />
-                            </motion.div>
+                            {/* 7. Why Choose TechZone */}
+                            <WhyChooseTechZone />
 
-                            {/* TechZone Gallery - Interactive Cursor Trail */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.9, duration: 0.8 }}
-                            >
-                                <TechZoneGallery />
-                            </motion.div>
+                            {/* 9. Experience Gallery (Old Gallery with Trail) */}
+                            <TechZoneGallery />
 
-                            {/* Branches Section - Interactive Maps */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 1.1, duration: 0.8 }}
-                            >
+                            {/* 11. Branches Section */}
+                            <div id="branches">
                                 <BranchesMapsDemo />
-                            </motion.div>
+                            </div>
 
-                            {/* Footer */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 1.3, duration: 0.8 }}
-                            >
-                                <TechZoneFooter />
-                            </motion.div>
+                            {/* 12. Footer */}
+                            <TechZoneFooter />
                         </main>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </>
+        </div>
     );
 }

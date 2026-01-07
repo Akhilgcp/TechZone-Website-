@@ -83,11 +83,16 @@ export default function BranchesMaps({ className }: { className?: string }) {
                                     transition={{ type: "spring", stiffness: 300, damping: 24 }}
                                     className="relative rounded-2xl border border-neutral-700/50 bg-neutral-900/50 shadow-sm overflow-hidden"
                                 >
-                                    <button
+                                    <div
                                         onClick={() => handleToggle(b.id)}
-                                        className="w-full text-left"
-                                        aria-expanded={isOpen}
-                                        aria-controls={`branch-panel-${b.id}`}
+                                        className="w-full text-left cursor-pointer"
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                handleToggle(b.id);
+                                            }
+                                        }}
                                     >
                                         {/* Header */}
                                         <div className="p-4 border-b border-neutral-700/30">
@@ -130,9 +135,31 @@ export default function BranchesMaps({ className }: { className?: string }) {
                                                     <Clock className="h-3.5 w-3.5 text-purple-400" />
                                                     <span>{b.hours}</span>
                                                 </div>
+
+                                                {/* CTAs */}
+                                                <div className="flex items-center gap-2 pt-2">
+                                                    <a
+                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.address)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-medium py-2 rounded text-center transition-colors"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        Get Directions
+                                                    </a>
+                                                    {b.phone && (
+                                                        <a
+                                                            href={`tel:${b.phone}`}
+                                                            className="flex-1 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/20 text-blue-400 text-xs font-medium py-2 rounded text-center transition-colors"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                            Call Now
+                                                        </a>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </button>
+                                    </div>
 
                                     {/* Expandable panel with iframe map */}
                                     <AnimatePresence mode="wait">

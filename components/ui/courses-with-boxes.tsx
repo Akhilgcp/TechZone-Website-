@@ -373,19 +373,45 @@ export default function CoursesWithBoxes({ className }: { className?: string }) 
                                 } as any;
 
                             return (
-                                <motion.div key={c.title} {...motionProps}>
+                                <motion.div key={c.title} {...motionProps} className="h-full">
                                     <div
                                         onClick={() => setSelectedCourse(c)}
-                                        className="cursor-pointer transform transition-transform hover:scale-105"
+                                        className="cursor-pointer transform transition-transform hover:scale-105 h-full"
                                     >
-                                        <FeatureCard
-                                            feature={{
-                                                title: c.title,
-                                                icon: c.icon,
-                                                description: c.description,
-                                            }}
-                                            className="bg-card/6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all"
-                                        />
+                                        {c.title === "AI Essentials" ? (
+                                            <div className="relative shadow-xl bg-gray-900 border border-gray-800 px-4 py-8 h-full overflow-hidden rounded-2xl flex flex-col items-start min-h-[300px]">
+                                                <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-500 to-teal-500 transform scale-[0.80] bg-red-500 rounded-full blur-3xl opacity-20" />
+
+                                                <div className="relative z-50 flex-1">
+                                                    <div className="h-10 w-10 rounded-full border flex items-center justify-center mb-4 border-gray-500">
+                                                        <c.icon className="h-5 w-5 text-gray-300" />
+                                                    </div>
+
+                                                    <h1 className="font-bold text-xl text-white mb-4">
+                                                        {c.title}
+                                                    </h1>
+
+                                                    <p className="font-normal text-base text-slate-500 mb-4 line-clamp-4">
+                                                        {c.description}
+                                                    </p>
+                                                </div>
+
+                                                <button className="border px-4 py-1 rounded-lg border-gray-500 text-gray-300 relative z-50 mt-auto hover:bg-gray-800 transition-colors">
+                                                    Explore
+                                                </button>
+
+                                                <Meteors number={20} />
+                                            </div>
+                                        ) : (
+                                            <FeatureCard
+                                                feature={{
+                                                    title: c.title,
+                                                    icon: c.icon,
+                                                    description: c.description,
+                                                }}
+                                                className="bg-card/6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all h-full min-h-[300px]"
+                                            />
+                                        )}
                                     </div>
                                 </motion.div>
                             );

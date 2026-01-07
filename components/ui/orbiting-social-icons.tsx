@@ -129,7 +129,7 @@ const OrbitingSkill = memo(({ config, angle }: OrbitingSkillProps) => {
         `}
             style={{
                 boxShadow: isHovered
-                    ? `0 0 30px ${iconComponents[iconType]?.color}40, 0 0 60px ${iconComponents[iconType]?.color}20`
+                    ? `0 0 15px ${iconComponents[iconType]?.color}40, 0 0 30px ${iconComponents[iconType]?.color}20`
                     : undefined,
                 color: iconComponents[iconType]?.color
             }}
@@ -207,9 +207,7 @@ const GlowingOrbitPath = memo(({ radius, glowColor = 'blue', animationDelay = 0 
                 className="absolute inset-0 rounded-full animate-pulse"
                 style={{
                     background: `radial-gradient(circle, transparent 30%, ${colors.secondary} 70%, ${colors.primary} 100%)`,
-                    boxShadow: `0 0 40px ${colors.primary}, inset 0 0 40px ${colors.secondary}`,
-                    animation: 'pulse 4s ease-in-out infinite',
-                    animationDelay: `${animationDelay}s`,
+                    boxShadow: `0 0 15px ${colors.primary}, inset 0 0 15px ${colors.secondary}`,
                 }}
             />
 
@@ -262,9 +260,8 @@ export default function OrbitingSocialIcons() {
             >
 
                 {/* Central TechZone Logo */}
-                <div className="w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center z-10 relative shadow-2xl p-2">
-                    <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-xl animate-pulse"></div>
-                    <div className="absolute inset-0 rounded-full bg-pink-500/20 blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 relative shadow-2xl p-2 overflow-hidden">
+                    <div className="absolute inset-0 rounded-full bg-blue-500/10 blur-xl animate-pulse"></div>
                     <div className="relative z-10 w-full h-full flex items-center justify-center">
                         <img
                             src="/techzone-logo.png"

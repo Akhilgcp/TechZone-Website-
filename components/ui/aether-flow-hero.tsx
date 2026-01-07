@@ -85,15 +85,19 @@ const AetherFlowHero: React.FC<AetherFlowHeroProps> = ({ onExplore }) => {
         function init() {
             if (!canvas) return;
             particles = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            const isMobile = window.innerWidth < 768;
+            let numberOfParticles = (canvas.height * canvas.width) / (isMobile ? 15000 : 9000);
+
+            // Cap particles for extreme cases
+            numberOfParticles = Math.min(numberOfParticles, isMobile ? 80 : 200);
+
             for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 2) + 1;
+                let size = (Math.random() * (isMobile ? 1.5 : 2)) + 1;
                 let x = (Math.random() * ((window.innerWidth - size * 2) - (size * 2)) + size * 2);
                 let y = (Math.random() * ((window.innerHeight - size * 2) - (size * 2)) + size * 2);
                 let directionX = (Math.random() * 0.4) - 0.2;
                 let directionY = (Math.random() * 0.4) - 0.2;
-                // Changed to blue theme to match TechZone branding
-                let color = 'rgba(60, 162, 250, 0.8)'; // TechZone blue
+                let color = 'rgba(60, 162, 250, 0.8)';
                 particles.push(new Particle(x, y, directionX, directionY, size, color));
             }
         }
@@ -209,25 +213,35 @@ const AetherFlowHero: React.FC<AetherFlowHeroProps> = ({ onExplore }) => {
                     </span>
                 </motion.div>
 
-                <motion.h1
-                    custom={1}
-                    variants={fadeUpVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="text-5xl md:text-8xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400"
-                >
-                    TechZone Academy
-                </motion.h1>
+                <div className="mb-8 flex flex-col items-center">
+                    <motion.h1
+                        custom={1}
+                        variants={fadeUpVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="text-6xl md:text-9xl font-extrabold tracking-wide text-[#0B5FA5] drop-shadow-sm [-webkit-text-stroke:2px_white]"
+                    >
+                        TechZone
+                    </motion.h1>
+                    <motion.h2
+                        custom={1.2}
+                        variants={fadeUpVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="text-xl md:text-3xl font-semibold tracking-normal text-[#D63A3A] mt-2 [-webkit-text-stroke:1px_white]"
+                    >
+                        Academy for Training & Research
+                    </motion.h2>
+                </div>
 
                 <motion.p
                     custom={2}
                     variants={fadeUpVariants}
                     initial="hidden"
                     animate="visible"
-                    className="max-w-2xl mx-auto text-lg text-gray-400 mb-10"
+                    className="max-w-3xl mx-auto text-xl md:text-2xl font-semibold mb-10 leading-relaxed bg-clip-text text-transparent bg-gradient-to-r from-gray-200 via-gray-100 to-gray-400 drop-shadow-sm"
                 >
-                    Master Data Analytics, Data Science, AI/ML with Gen AI, and Prompt Engineering.
-                    Transform your career with hands-on training from industry experts.
+                    Where Skills Become Careers — Powered by Data, AI & Real-World Experience
                 </motion.p>
 
                 <motion.div

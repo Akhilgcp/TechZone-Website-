@@ -28,6 +28,9 @@ function TechZoneFooter() {
                 { label: "About Us", href: "#about" },
                 { label: "Our Branches", href: "#branches" },
                 { label: "Contact Us", href: "#contact" },
+                { label: "FAQ", href: "#faq" },
+                { label: "Privacy Policy", href: "#privacy" },
+                { label: "Terms & Conditions", href: "#terms" },
             ],
         },
     ];
@@ -72,7 +75,17 @@ function TechZoneFooter() {
                                         <li key={link.label} className="relative">
                                             <a
                                                 href={link.href}
-                                                className="text-neutral-400 hover:text-[#3ca2fa] transition-colors"
+                                                onClick={(e) => {
+                                                    if (link.href.startsWith("#")) {
+                                                        e.preventDefault();
+                                                        const id = link.href.substring(1);
+                                                        const element = document.getElementById(id);
+                                                        if (element) {
+                                                            element.scrollIntoView({ behavior: "smooth" });
+                                                        }
+                                                    }
+                                                }}
+                                                className="text-neutral-400 hover:text-[#3ca2fa] transition-colors cursor-pointer"
                                             >
                                                 {link.label}
                                             </a>

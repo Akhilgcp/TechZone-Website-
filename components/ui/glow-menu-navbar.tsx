@@ -182,6 +182,7 @@ export function GlowMenuNavbar({ onHomeClick }: GlowMenuNavbarProps = {}) {
                                 className="object-contain"
                                 priority
                                 quality={100}
+                                sizes="64px"
                             />
                         </div>
                     </Link>

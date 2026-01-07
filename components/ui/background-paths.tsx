@@ -56,7 +56,7 @@ export function BackgroundPaths({
     showButton = false,
 }: {
     title?: string;
-    description?: string;
+    description?: React.ReactNode;
     showButton?: boolean;
 }) {
     return (
@@ -94,14 +94,14 @@ export function BackgroundPaths({
                         </h1>
 
                         {description && (
-                            <motion.p
+                            <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 1, duration: 0.8 }}
                                 className="text-neutral-700 dark:text-neutral-200 leading-relaxed text-lg md:text-xl mb-8"
                             >
                                 {description}
-                            </motion.p>
+                            </motion.div>
                         )}
                     </motion.div>
                 </div>

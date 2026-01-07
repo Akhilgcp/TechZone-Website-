@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import ScrollMorphGallery from "@/components/ui/scroll-morph-gallery"
+import { CircularGallery } from "@/components/ui/circular-gallery-2"
 import EnhancedMediaModal from "@/components/ui/media-modal"
 import { getAllMedia } from "@/lib/albums-manifest"
 import { Sparkles } from "lucide-react"
@@ -11,6 +11,13 @@ export default function TechZoneGallery() {
     const [selectedIndex, setSelectedIndex] = useState(0)
 
     const allMedia = getAllMedia()
+
+    // Map allMedia to the format expected by CircularGallery
+    const galleryItems = allMedia.slice(0, 8).map(item => ({
+        image: item.path,
+        text: item.alt,
+        type: item.type
+    }))
 
     const handleMediaClick = (index: number) => {
         setSelectedIndex(index)
@@ -38,23 +45,25 @@ export default function TechZoneGallery() {
                 </h2>
 
                 <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
-                    Scroll through our interactive gallery to explore our vibrant learning environment.
-                    Click any image to view full-size and navigate through our collection.
+                    Take a circular tour through our interactive gallery to explore our vibrant learning environment.
+                    Click any item to view full-size or play videos.
                 </p>
             </div>
 
-            {/* Scroll Morph Gallery */}
-            <div className="relative z-10 max-w-7xl mx-auto">
-                <div className="relative mx-auto w-full max-w-6xl rounded-[24px] border border-white/5 p-2 shadow-2xl md:rounded-t-[44px] bg-gradient-to-br from-neutral-900/50 to-neutral-950/50 backdrop-blur-sm">
-                    <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-white/5 bg-neutral-900/30 shadow-xl md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] overflow-hidden h-[600px]">
-                        <ScrollMorphGallery onMediaClick={handleMediaClick} />
-                    </div>
-                </div>
+            {/* Circular Gallery */}
+            <div className="relative z-10 w-full h-[600px]">
+                <CircularGallery
+                    items={galleryItems}
+                    bend={3}
+                    borderRadius={0.05}
+                    scrollEase={0.05}
+                    onItemClick={handleMediaClick}
+                />
 
                 {/* Helper text */}
-                <div className="mt-8 text-center">
+                <div className="mt-8 text-center px-4 relative z-20">
                     <p className="text-neutral-500 text-sm">
-                        💡 <span className="text-neutral-400">Tip:</span> Scroll within the gallery to see the morphing animation. Click any image to view full-size. Use arrow keys or swipe to navigate through all {allMedia.length} items.
+                        💡 <span className="text-neutral-400">Tip:</span> Drag or scroll to rotate the gallery. Click any item to explore.
                     </p>
                 </div>
             </div>

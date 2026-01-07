@@ -41,13 +41,11 @@ const techzoneTimelineData = [
 
 export function TechZoneOrbitalTimelineDemo() {
     return (
-        <div className="relative">
-            <RadialOrbitalTimeline timelineData={techzoneTimelineData} />
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center z-10 max-w-3xl px-4">
-                <p className="text-neutral-300 text-sm">
-                    TechZone Academy offers software training programs across multiple branches in Hyderabad, including Lakdikapul, Himayat Nagar, and Tolichowki.
-                </p>
-            </div>
+        <div className="relative w-full h-[650px] bg-black pt-20">
+            <RadialOrbitalTimeline
+                timelineData={techzoneTimelineData}
+                autoRotate={true}
+            />
         </div>
     );
 }

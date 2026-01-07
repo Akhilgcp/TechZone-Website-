@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+
 
 // Course data for TechZone Academy
 const accordionItems = [
@@ -65,8 +68,8 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ item, isActive, onMouseEn
         <div
             className={`
         relative h-[450px] rounded-2xl overflow-hidden cursor-pointer
-        transition-all duration-700 ease-in-out
-        ${isActive ? 'w-[400px]' : 'w-[60px]'}
+        transition-all duration-500 ease-in-out
+        ${isActive ? 'w-[300px] md:w-[400px]' : 'w-[50px] md:w-[60px]'}
       `}
             onMouseEnter={onMouseEnter}
             onClick={onClick}
@@ -75,6 +78,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ item, isActive, onMouseEn
             <img
                 src={item.imageUrl}
                 alt={item.title}
+                loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover"
                 onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -86,18 +90,27 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ item, isActive, onMouseEn
             <div className="absolute inset-0 bg-black bg-opacity-40"></div>
 
             {/* Caption Text */}
-            <span
+            <div
                 className={`
-          absolute text-white text-lg font-semibold whitespace-nowrap
-          transition-all duration-300 ease-in-out
+          absolute text-white transition-all duration-500 ease-in-out flex flex-col items-center justify-center text-center
           ${isActive
-                        ? 'bottom-6 left-1/2 -translate-x-1/2 rotate-0'
-                        : 'w-auto text-left bottom-24 left-1/2 -translate-x-1/2 rotate-90'
+                        ? 'bottom-6 left-0 right-0 opacity-100'
+                        : 'w-auto bottom-24 left-1/2 -translate-x-1/2 -rotate-90 opacity-80'
                     }
         `}
             >
-                {item.title}
-            </span>
+                <span className={`font-bold ${isActive ? 'text-2xl mb-1' : 'text-lg whitespace-nowrap'}`}>
+                    {item.title}
+                </span>
+
+                {isActive && (
+                    <div className="flex flex-col gap-1 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100">
+                        <span className="text-sm font-medium text-blue-300">{item.level}</span>
+                        <span className="text-xs text-gray-300">{item.duration}</span>
+                        <span className="mt-2 text-xs uppercase tracking-wide border border-white/20 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm">Click to View Details</span>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
@@ -177,7 +190,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => {
 };
 
 // Main Component
-export function TechZoneCoursesAccordion() {
+export function TechZoneCoursesAccordion({ onViewAllClick }: { onViewAllClick?: () => void }) {
     const [activeIndex, setActiveIndex] = useState(2); // Default to AI/ML
     const [selectedCourse, setSelectedCourse] = useState<typeof accordionItems[0] | null>(null);
 
@@ -191,6 +204,11 @@ export function TechZoneCoursesAccordion() {
 
     const handleCloseModal = () => {
         setSelectedCourse(null);
+        // Scroll to courses section to ensure user doesn't get lost
+        const coursesSection = document.getElementById('courses');
+        if (coursesSection) {
+            coursesSection.scrollIntoView({ behavior: 'smooth' });
+        }
     };
 
     return (
@@ -211,13 +229,13 @@ export function TechZoneCoursesAccordion() {
                             <p className="mt-4 text-md text-gray-400 max-w-xl mx-auto md:mx-0">
                                 Hover over each course to preview, click to view full details and enroll.
                             </p>
-                            <div className="mt-8">
-                                <a
-                                    href="/courses"
+                            <div className="mt-8 flex flex-col items-center md:items-start gap-8">
+                                <button
+                                    onClick={onViewAllClick}
                                     className="inline-block bg-[#004AAD] text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-[#003a8c] transition-colors duration-300"
                                 >
                                     View All Courses
-                                </a>
+                                </button>
                             </div>
                         </div>
 
